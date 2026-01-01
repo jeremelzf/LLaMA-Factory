@@ -730,5 +730,19 @@
       "prompt": "content"
     },
     "folder": "python"
+  },
+  "GraSP_train": {
+    "file_name": "GraSP/GraSP_train_sharegpt.json",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "messages",
+      "images": "images"
+    },
+    "tags": {
+      "role_tag": "role",
+      "content_tag": "content",
+      "user_tag": "user",
+      "assistant_tag": "assistant"
+    }
   }
 }

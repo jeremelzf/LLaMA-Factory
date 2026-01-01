@@ -1,0 +1,112 @@
+"""
+Convert GraSP dataset from conversations/response format to ShareGPT format
+for use with LLaMA-Factory and Qwen3-VL.
+"""
+import json
+import os
+import random
+
+def convert_grasp_to_llamafactory(input_file, output_file, include_general_response=True):
+    """
+    Convert GraSP dataset to LLaMA-Factory format with question variations.
+    
+    Input format:
+    {
+        "id": 0,
+        "images": ["path1.jpg", ...],
+        "conversations": ["prompt1", "prompt2", ...],
+        "response": "response text"
+    }
+    
+    Output format:
+    {
+        "messages": [
+            {"role": "user", "content": "question"},
+            {"role": "assistant", "content": "answer"}
+        ],
+        "images": ["path1.jpg", ...]
+    }
+    """
+    
+    with open(input_file, 'r', encoding='utf-8') as f:
+        grasp_data = json.load(f)
+    
+    llamafactory_data = []
+    
+    # Define question variations for diversity
+    phase_step_questions = [
+        "What surgical phase and step are shown in these images?",
+        "Identify the surgical phase and step being performed.",
+        "What surgical phase and step can you identify in these images?",
+        "Describe the surgical phase and step visible in this sequence."
+    ]
+    
+    general_questions = [
+        "Describe what you see in this surgical video.",
+        "Provide a detailed description of this surgical procedure.",
+        "What is visible in these surgical images?",
+        "Give a comprehensive description of the surgical scene.",
+        "What details can you observe in these surgical frames?"
+    ]
+    
+    for sample in grasp_data:
+        # Pick a random conversation variant (since you have 5 variations)
+        conversation_text = random.choice(sample['conversations']) if sample['conversations'] else ""
+        
+        # Create LLaMA-Factory format for phase/step identification
+        if conversation_text:
+            converted_sample = {
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": random.choice(phase_step_questions)
+                    },
+                    {
+                        "role": "assistant",
+                        "content": conversation_text
+                    }
+                ],
+                "images": sample['images']
+            }
+            
+            llamafactory_data.append(converted_sample)
+        
+        # Optional: Add the general response as a second training sample
+        # This gives the model more varied training data
+        if include_general_response and sample.get('response'):
+            converted_sample_general = {
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": random.choice(general_questions)
+                    },
+                    {
+                        "role": "assistant",
+                        "content": sample['response']
+                    }
+                ],
+                "images": sample['images']
+            }
+            
+            llamafactory_data.append(converted_sample_general)
+    
+    # Create output directory if it doesn't exist
+    output_dir = os.path.dirname(output_file)
+    if output_dir:
+        os.makedirs(output_dir, exist_ok=True)
+    
+    # Save converted data
+    with open(output_file, 'w', encoding='utf-8') as f:
+        json.dump(llamafactory_data, f, indent=2, ensure_ascii=False)
+    
+    print(f"Converted {len(grasp_data)} samples to {len(llamafactory_data)} training samples")
+    print(f"Saved to {output_file}")
+
+if __name__ == "__main__":
+    # Convert training data
+    convert_grasp_to_llamafactory(
+        input_file="GraSP_caption_InternVL3_5-241B-A28B-Flash_output.json",
+        output_file="GraSP_train_sharegpt.json",
+        include_general_response=True  # Set to False to only include phase/step samples
+    )
+
