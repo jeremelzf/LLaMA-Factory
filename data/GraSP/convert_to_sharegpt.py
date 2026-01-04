@@ -38,7 +38,8 @@ def convert_grasp_to_llamafactory(input_file, output_file, include_general_respo
         "What surgical phase and step are shown in these images?",
         "Identify the surgical phase and step being performed.",
         "What surgical phase and step can you identify in these images?",
-        "Describe the surgical phase and step visible in this sequence."
+        "Describe the surgical phase and step visible in this sequence.",
+        "Analyze these frames and specify the surgical phase and step being performed."
     ]
     
     general_questions = [
