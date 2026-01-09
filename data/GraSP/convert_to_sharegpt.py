@@ -118,8 +118,8 @@ def convert_grasp_to_llamafactory(input_file, output_file, include_general_respo
 if __name__ == "__main__":
     # Convert training data
     convert_grasp_to_llamafactory(
-        input_file="GraSP_caption_InternVL3_5-241B-A28B-Flash_output.json",
-        output_file="GraSP_train_sharegpt.json",
+        input_file="train/raSP_caption_InternVL3_5-241B-A28B-Flash_output.json",
+        output_file="train/GraSP_train_sharegpt.json",
         include_general_response=True  # Set to False to only include phase/step samples
     )
 
