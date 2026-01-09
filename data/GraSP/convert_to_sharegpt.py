@@ -50,9 +50,21 @@ def convert_grasp_to_llamafactory(input_file, output_file, include_general_respo
         "What details can you observe in these surgical frames?"
     ]
     
+    # Convert image paths from GraSP/train/frames/... to /scratch/e0957602/BN4101/grasp_frames/...
+    def convert_image_path(image_path):
+        """Convert image path to HPC scratch space path."""
+        if image_path.startswith("GraSP/train/frames/"):
+            # Remove the prefix and add the HPC path
+            relative_path = image_path.replace("GraSP/train/frames/", "")
+            return f"/scratch/e0957602/BN4101/grasp_frames/{relative_path}"
+        return image_path
+    
     for sample in grasp_data:
         # Pick a random conversation variant (since you have 5 variations)
         conversation_text = random.choice(sample['conversations']) if sample['conversations'] else ""
+        
+        # Convert image paths to HPC scratch space
+        converted_images = [convert_image_path(img) for img in sample['images']]
         
         # Create LLaMA-Factory format for phase/step identification
         if conversation_text:
@@ -67,7 +79,7 @@ def convert_grasp_to_llamafactory(input_file, output_file, include_general_respo
                         "content": conversation_text
                     }
                 ],
-                "images": sample['images']
+                "images": converted_images
             }
             
             llamafactory_data.append(converted_sample)
@@ -86,7 +98,7 @@ def convert_grasp_to_llamafactory(input_file, output_file, include_general_respo
                         "content": sample['response']
                     }
                 ],
-                "images": sample['images']
+                "images": converted_images
             }
             
             llamafactory_data.append(converted_sample_general)
