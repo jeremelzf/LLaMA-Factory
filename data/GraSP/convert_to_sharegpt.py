@@ -68,11 +68,16 @@ def convert_grasp_to_llamafactory(input_file, output_file, include_general_respo
         
         # Create LLaMA-Factory format for phase/step identification
         if conversation_text:
+            # Add <image> tokens matching the number of images
+            num_images = len(converted_images)
+            image_tokens = "<image>" * num_images
+            user_content = f"{image_tokens}\n{random.choice(phase_step_questions)}"
+            
             converted_sample = {
                 "messages": [
                     {
                         "role": "user",
-                        "content": random.choice(phase_step_questions)
+                        "content": user_content
                     },
                     {
                         "role": "assistant",
@@ -87,11 +92,16 @@ def convert_grasp_to_llamafactory(input_file, output_file, include_general_respo
         # Optional: Add the general response as a second training sample
         # This gives the model more varied training data
         if include_general_response and sample.get('response'):
+            # Add <image> tokens matching the number of images
+            num_images = len(converted_images)
+            image_tokens = "<image>" * num_images
+            user_content = f"{image_tokens}\n{random.choice(general_questions)}"
+            
             converted_sample_general = {
                 "messages": [
                     {
                         "role": "user",
-                        "content": random.choice(general_questions)
+                        "content": user_content
                     },
                     {
                         "role": "assistant",
