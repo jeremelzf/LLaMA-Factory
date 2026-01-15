@@ -740,7 +740,7 @@
     "folder": "python"
   },
   "GraSP_train": {
-    "file_name": "GraSP/GraSP_train_sharegpt.json",
+    "file_name": "GraSP/train/GraSP_train_sharegpt.json",
     "formatting": "sharegpt",
     "columns": {
       "messages": "messages",
