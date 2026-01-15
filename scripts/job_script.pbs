@@ -1,5 +1,4 @@
 #!/bin/bash
-#PBS -P medqwen3
 #PBS -N qwen3_training
 #PBS -q interactive_gpu
 #PBS -l select=1:ncpus=16:ngpus=1:mem=64gb
