@@ -1,0 +1,33 @@
+#!/bin/bash
+#PBS -P medqwen3
+#PBS -N qwen3_training
+#PBS -q interactive_gpu
+#PBS -l select=1:ncpus=16:ngpus=1:mem=64gb
+#PBS -l walltime=04:00:00
+#PBS -j oe
+#PBS -o /scratch/e0957602/BN4101/logs/qwen3_vl_${PBS_JOBID}.log
+##PBS -M e0957602@u.nus.edu
+##PBS -m abe
+
+# cd back to the directory where I submitted the job from
+cd $PBS_O_WORKDIR
+
+# Load modules
+module load Python/3.12.3-GCCcore-13.3.0
+
+# Activate environment
+cd ~/LLaMA-Factory
+source ~/venvs/llmf/bin/activate
+
+echo "=== WebUI Session Started ==="
+echo "Job ID: $PBS_JOBID"
+echo "Started on: $(date)"
+echo "Running on node: $(hostname)"
+echo ""
+echo "To access WebUI, run this on your LOCAL computer:"
+echo "ssh -N -L 7860:localhost:7860 -J e0957602@vanda.nus.edu.sg e0957602@<compute node>"
+echo "Then open: http://127.0.0.1:7860/"
+echo "==================================="
+
+# Launch Web UI if required
+CUDA_VISIBLE_DEVICES=0 lmf webui
