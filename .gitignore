@@ -183,3 +183,4 @@ predictions_score.json
 
 # annotations jsonl file
 data/GraSP/train/V2/GraSP_PhaseStep_Recognition.jsonl
+data/GraSP/train/V2/GraSP_PhaseStep_Recognition_updated.jsonl
