@@ -14,7 +14,7 @@
 
 import os
 from collections import OrderedDict, defaultdict
-from enum import Enum, unique
+from enum import StrEnum, unique
 
 from peft.utils import SAFETENSORS_WEIGHTS_NAME as SAFE_ADAPTER_WEIGHTS_NAME
 from peft.utils import WEIGHTS_NAME as ADAPTER_WEIGHTS_NAME
@@ -57,6 +57,7 @@ LLAMABOARD_CONFIG = "llamaboard_config.yaml"
 
 MCA_SUPPORTED_MODELS = {
     "deepseek_v3",
+    "glm4_moe",
     "llama",
     "mistral",
     "mixtral",
@@ -64,14 +65,31 @@ MCA_SUPPORTED_MODELS = {
     "qwen2_vl",
     "qwen2_5_vl",
     "qwen3_vl",
+    "qwen3_vl_moe",
     "qwen3",
     "qwen3_moe",
     "qwen3_next",
+    "qwen3_5",
+    "qwen3_5_moe",
 }
 
 METHODS = ["full", "freeze", "lora", "oft"]
 
 MOD_SUPPORTED_MODELS = {"bloom", "falcon", "gemma", "llama", "mistral", "mixtral", "phi", "starcoder2"}
+
+MROPE_MODELS = {
+    "glm4v",
+    "glm_ocr",
+    "Keye",
+    "qwen2_vl",
+    "qwen2_5_vl",
+    "qwen2_5_omni_thinker",
+    "qwen3_omni_moe_thinker",
+    "qwen3_vl",
+    "qwen3_vl_moe",
+    "qwen3_5",
+    "qwen3_5_moe",
+}
 
 MULTIMODAL_SUPPORTED_MODELS = set()
 
@@ -109,7 +127,7 @@ V_HEAD_WEIGHTS_NAME = "value_head.bin"
 V_HEAD_SAFE_WEIGHTS_NAME = "value_head.safetensors"
 
 
-class AttentionFunction(str, Enum):
+class AttentionFunction(StrEnum):
     AUTO = "auto"
     DISABLED = "disabled"
     SDPA = "sdpa"
@@ -117,21 +135,21 @@ class AttentionFunction(str, Enum):
     FA3 = "fa3"
 
 
-class EngineName(str, Enum):
+class EngineName(StrEnum):
     HF = "huggingface"
     VLLM = "vllm"
     SGLANG = "sglang"
     KT = "ktransformers"
 
 
-class DownloadSource(str, Enum):
+class DownloadSource(StrEnum):
     DEFAULT = "hf"
     MODELSCOPE = "ms"
     OPENMIND = "om"
 
 
 @unique
-class QuantizationMethod(str, Enum):
+class QuantizationMethod(StrEnum):
     r"""Borrowed from `transformers.utils.quantization_config.QuantizationMethod`."""
 
     BNB = "bnb"
@@ -145,7 +163,7 @@ class QuantizationMethod(str, Enum):
     FP8 = "fp8"
 
 
-class RopeScaling(str, Enum):
+class RopeScaling(StrEnum):
     LINEAR = "linear"
     DYNAMIC = "dynamic"
     YARN = "yarn"
@@ -940,6 +958,29 @@ register_model_group(
 
 register_model_group(
     models={
+        "GLM-4.7-Flash": {
+            DownloadSource.DEFAULT: "zai-org/GLM-4.7-Flash",
+            DownloadSource.MODELSCOPE: "ZhipuAI/GLM-4.7-Flash",
+        },
+    },
+    template="glm4_7",
+)
+
+
+register_model_group(
+    models={
+        "GLM-OCR": {
+            DownloadSource.DEFAULT: "zai-org/GLM-OCR",
+            DownloadSource.MODELSCOPE: "ZhipuAI/GLM-OCR",
+        },
+    },
+    template="glm_ocr",
+    multimodal=True,
+)
+
+
+register_model_group(
+    models={
         "GLM-Z1-0414-9B-Chat": {
             DownloadSource.DEFAULT: "zai-org/GLM-Z1-9B-0414",
             DownloadSource.MODELSCOPE: "ZhipuAI/GLM-Z1-9B-0414",
@@ -1144,16 +1185,47 @@ register_model_group(
 
 register_model_group(
     models={
+        "Hunyuan-0.5B-Instruct": {
+            DownloadSource.DEFAULT: "tencent/Hunyuan-0.5B-Instruct",
+            DownloadSource.MODELSCOPE: "Tencent-Hunyuan/Hunyuan-0.5B-Instruct",
+        },
+        "Hunyuan-1.8B-Instruct": {
+            DownloadSource.DEFAULT: "tencent/Hunyuan-1.8B-Instruct",
+            DownloadSource.MODELSCOPE: "Tencent-Hunyuan/Hunyuan-1.8B-Instruct",
+        },
+        "Hunyuan-4B-Instruct": {
+            DownloadSource.DEFAULT: "tencent/Hunyuan-4B-Instruct",
+            DownloadSource.MODELSCOPE: "Tencent-Hunyuan/Hunyuan-4B-Instruct",
+        },
         "Hunyuan-7B-Instruct": {
             DownloadSource.DEFAULT: "tencent/Hunyuan-7B-Instruct",
-            DownloadSource.MODELSCOPE: "AI-ModelScope/Hunyuan-7B-Instruct",
+            DownloadSource.MODELSCOPE: "Tencent-Hunyuan/Hunyuan-7B-Instruct",
         },
         "Hunyuan-MT-7B-Instruct": {
             DownloadSource.DEFAULT: "tencent/Hunyuan-MT-7B",
             DownloadSource.MODELSCOPE: "Tencent-Hunyuan/Hunyuan-MT-7B",
         },
+        "HY-MT1.5-7B-Instruct": {
+            DownloadSource.DEFAULT: "tencent/HY-MT1.5-7B",
+            DownloadSource.MODELSCOPE: "Tencent-Hunyuan/HY-MT1.5-7B",
+        },
+        "Hunyuan-A13B-Instruct": {
+            DownloadSource.DEFAULT: "tencent/Hunyuan-A13B-Instruct",
+            DownloadSource.MODELSCOPE: "Tencent-Hunyuan/Hunyuan-A13B-Instruct",
+        },
     },
     template="hunyuan",
+)
+
+
+register_model_group(
+    models={
+        "HY-MT1.5-1.8B-Instruct": {
+            DownloadSource.DEFAULT: "tencent/HY-MT1.5-1.8B",
+            DownloadSource.MODELSCOPE: "Tencent-Hunyuan/HY-MT1.5-1.8B",
+        },
+    },
+    template="hunyuan_small",
 )
 
 
@@ -1807,6 +1879,10 @@ register_model_group(
         "MiniCPM-o-2.6": {
             DownloadSource.DEFAULT: "openbmb/MiniCPM-o-2_6",
             DownloadSource.MODELSCOPE: "OpenBMB/MiniCPM-o-2_6",
+        },
+        "MiniCPM-o-4_5": {
+            DownloadSource.DEFAULT: "openbmb/MiniCPM-o-4_5",
+            DownloadSource.MODELSCOPE: "OpenBMB/MiniCPM-o-4_5",
         },
     },
     template="minicpm_o",
@@ -2752,6 +2828,66 @@ register_model_group(
 
 register_model_group(
     models={
+        "Qwen3.5-0.8B-Base": {
+            DownloadSource.DEFAULT: "Qwen/Qwen3.5-0.8B-Base",
+            DownloadSource.MODELSCOPE: "Qwen/Qwen3.5-0.8B-Base",
+        },
+        "Qwen3.5-2B-Base": {
+            DownloadSource.DEFAULT: "Qwen/Qwen3.5-2B-Base",
+            DownloadSource.MODELSCOPE: "Qwen/Qwen3.5-2B-Base",
+        },
+        "Qwen3.5-4B-Base": {
+            DownloadSource.DEFAULT: "Qwen/Qwen3.5-4B-Base",
+            DownloadSource.MODELSCOPE: "Qwen/Qwen3.5-4B-Base",
+        },
+        "Qwen3.5-9B-Base": {
+            DownloadSource.DEFAULT: "Qwen/Qwen3.5-9B-Base",
+            DownloadSource.MODELSCOPE: "Qwen/Qwen3.5-9B-Base",
+        },
+        "Qwen3.5-35B-A3B-Base": {
+            DownloadSource.DEFAULT: "Qwen/Qwen3.5-35B-A3B-Base",
+            DownloadSource.MODELSCOPE: "Qwen/Qwen3.5-35B-A3B-Base",
+        },
+        "Qwen3.5-0.8B-Thinking": {
+            DownloadSource.DEFAULT: "Qwen/Qwen3.5-0.8B",
+            DownloadSource.MODELSCOPE: "Qwen/Qwen3.5-0.8B",
+        },
+        "Qwen3.5-2B-Thinking": {
+            DownloadSource.DEFAULT: "Qwen/Qwen3.5-2B",
+            DownloadSource.MODELSCOPE: "Qwen/Qwen3.5-2B",
+        },
+        "Qwen3.5-4B-Thinking": {
+            DownloadSource.DEFAULT: "Qwen/Qwen3.5-4B",
+            DownloadSource.MODELSCOPE: "Qwen/Qwen3.5-4B",
+        },
+        "Qwen3.5-9B-Thinking": {
+            DownloadSource.DEFAULT: "Qwen/Qwen3.5-9B",
+            DownloadSource.MODELSCOPE: "Qwen/Qwen3.5-9B",
+        },
+        "Qwen3.5-27B-Thinking": {
+            DownloadSource.DEFAULT: "Qwen/Qwen3.5-27B",
+            DownloadSource.MODELSCOPE: "Qwen/Qwen3.5-27B",
+        },
+        "Qwen3.5-35B-A3B-Thinking": {
+            DownloadSource.DEFAULT: "Qwen/Qwen3.5-35B-A3B",
+            DownloadSource.MODELSCOPE: "Qwen/Qwen3.5-35B-A3B",
+        },
+        "Qwen3.5-122B-A10B-Thinking": {
+            DownloadSource.DEFAULT: "Qwen/Qwen3.5-122B-A10B",
+            DownloadSource.MODELSCOPE: "Qwen/Qwen3.5-122B-A10B",
+        },
+        "Qwen3.5-397B-A17B-Thinking": {
+            DownloadSource.DEFAULT: "Qwen/Qwen3.5-397B-A17B",
+            DownloadSource.MODELSCOPE: "Qwen/Qwen3.5-397B-A17B",
+        },
+    },
+    template="qwen3_5",
+    multimodal=True,
+)
+
+
+register_model_group(
+    models={
         "Qwen2-Audio-7B": {
             DownloadSource.DEFAULT: "Qwen/Qwen2-Audio-7B",
             DownloadSource.MODELSCOPE: "Qwen/Qwen2-Audio-7B",
@@ -3126,12 +3262,13 @@ register_model_group(
             DownloadSource.DEFAULT: "Tele-AI/TeleChat2-7B",
             DownloadSource.MODELSCOPE: "TeleAI/TeleChat2-7B",
         },
-        "TeleChat2-35B-Chat": {
-            DownloadSource.MODELSCOPE: "TeleAI/TeleChat2-35B-Nov",
-        },
         "TeleChat2-115B-Chat": {
             DownloadSource.DEFAULT: "Tele-AI/TeleChat2-115B",
             DownloadSource.MODELSCOPE: "TeleAI/TeleChat2-115B",
+        },
+        "TeleChat2.5-35B-Chat": {
+            DownloadSource.DEFAULT: "Tele-AI/TeleChat2.5-35B",
+            DownloadSource.MODELSCOPE: "TeleAI/TeleChat2-35B-Nov",
         },
     },
     template="telechat2",
@@ -3345,6 +3482,18 @@ register_model_group(
 
 register_model_group(
     models={
+        "Youtu-VL-4B-Instruct": {
+            DownloadSource.DEFAULT: "tencent/Youtu-VL-4B-Instruct",
+            DownloadSource.MODELSCOPE: "Tencent-YouTu-Research/Youtu-VL-4B-Instruct",
+        },
+    },
+    template="youtu_vl",
+    multimodal=True,
+)
+
+
+register_model_group(
+    models={
         "Yuan2-2B-Chat": {
             DownloadSource.DEFAULT: "IEITYuan/Yuan2-2B-hf",
             DownloadSource.MODELSCOPE: "YuanLLM/Yuan2.0-2B-hf",
@@ -3377,4 +3526,36 @@ register_model_group(
         },
     },
     template="zephyr",
+)
+
+
+register_model_group(
+    models={
+        "Aeva-Flash-Chat": {
+            DownloadSource.DEFAULT: "louzongzhi/Aeva-Flash",
+            DownloadSource.MODELSCOPE: "louzongktsi/Aeva-Flash",
+            DownloadSource.OPENMIND: "louzongzhi/Aeva-Flash",
+        },
+        "Aeva-Air-Chat": {
+            DownloadSource.DEFAULT: "louzongzhi/Aeva-Air",
+            DownloadSource.MODELSCOPE: "louzongktsi/Aeva-Air",
+            DownloadSource.OPENMIND: "louzongzhi/Aeva-Air",
+        },
+        "Aeva-Chat": {
+            DownloadSource.DEFAULT: "louzongzhi/Aeva",
+            DownloadSource.MODELSCOPE: "louzongktsi/Aeva",
+            DownloadSource.OPENMIND: "louzongzhi/Aeva",
+        },
+        "Aeva-Pro-Chat": {
+            DownloadSource.DEFAULT: "louzongzhi/Aeva-Pro",
+            DownloadSource.MODELSCOPE: "louzongktsi/Aeva-Pro",
+            DownloadSource.OPENMIND: "louzongzhi/Aeva-Pro",
+        },
+        "Aeva-Max-Chat": {
+            DownloadSource.DEFAULT: "louzongzhi/Aeva-Max",
+            DownloadSource.MODELSCOPE: "louzongktsi/Aeva-Max",
+            DownloadSource.OPENMIND: "louzongzhi/Aeva-Max",
+        },
+    },
+    template="aeva",
 )
