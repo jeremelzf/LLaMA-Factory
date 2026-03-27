@@ -236,6 +236,13 @@
     "ms_hub_url": "AI-ModelScope/sharegpt_gpt4",
     "formatting": "sharegpt"
   },
+  "sgsc_b2b_entities": {
+    "hf_hub_url": "Nooxus-AI/NOO-Verified-Global-Entities",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "messages"
+    }
+  },
   "ultrachat_200k": {
     "hf_hub_url": "HuggingFaceH4/ultrachat_200k",
     "ms_hub_url": "AI-ModelScope/ultrachat_200k",
@@ -740,7 +747,7 @@
     "folder": "python"
   },
   "GraSP_train": {
-    "file_name": "GraSP/train/grasp_train.json",
+    "file_name": "GraSP/train/V1/grasp_train.json",
     "formatting": "sharegpt",
     "columns": {
       "messages": "messages",
@@ -754,7 +761,7 @@
     }
   },
   "GraSP_eval": {
-    "file_name": "GraSP/train/grasp_eval.json",
+    "file_name": "GraSP/train/V1/grasp_eval.json",
     "formatting": "sharegpt",
     "columns": {
       "messages": "messages",
@@ -765,6 +772,14 @@
       "content_tag": "content",
       "user_tag": "user",
       "assistant_tag": "assistant"
+    }
+  },
+  "grasp_phase_step": {
+  "file_name": "GraSP/train/V2/GraSP_PhaseStep_Recognition_updated.jsonl",
+  "formatting": "sharegpt",
+  "columns": {
+    "messages": "conversations",
+    "images": "image"
     }
   }
 }
