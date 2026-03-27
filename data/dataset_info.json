@@ -766,5 +766,13 @@
       "user_tag": "user",
       "assistant_tag": "assistant"
     }
+  },
+  "grasp_phase_step": {
+  "file_name": "GraSP_PhaseStep_Recognition_updated.jsonl",
+  "formatting": "sharegpt",
+  "columns": {
+    "messages": "conversations",
+    "images": "image"
+    }
   }
 }
