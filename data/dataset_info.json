@@ -740,7 +740,7 @@
     "folder": "python"
   },
   "GraSP_train": {
-    "file_name": "GraSP/train/grasp_train.json",
+    "file_name": "GraSP/train/V1/grasp_train.json",
     "formatting": "sharegpt",
     "columns": {
       "messages": "messages",
@@ -754,7 +754,7 @@
     }
   },
   "GraSP_eval": {
-    "file_name": "GraSP/train/grasp_eval.json",
+    "file_name": "GraSP/train/V1/grasp_eval.json",
     "formatting": "sharegpt",
     "columns": {
       "messages": "messages",
@@ -768,7 +768,7 @@
     }
   },
   "grasp_phase_step": {
-  "file_name": "GraSP_PhaseStep_Recognition_updated.jsonl",
+  "file_name": "GraSP/train/V2/GraSP_PhaseStep_Recognition_updated.jsonl",
   "formatting": "sharegpt",
   "columns": {
     "messages": "conversations",
