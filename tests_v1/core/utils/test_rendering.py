@@ -23,6 +23,13 @@ from llamafactory.v1.core.utils.rendering import Renderer
 from llamafactory.v1.utils.types import Processor
 
 
+def _get_input_ids(inputs: list | dict) -> list:
+    if not isinstance(inputs, list):
+        return inputs["input_ids"]
+    else:
+        return inputs
+
+
 HF_MESSAGES = [
     {"role": "system", "content": "You are a helpful assistant."},
     {"role": "user", "content": "What is LLM?"},
@@ -81,15 +88,15 @@ def test_chatml_rendering():
     tokenizer: Processor = AutoTokenizer.from_pretrained("llamafactory/tiny-random-qwen3")
     renderer = Renderer(template="chatml", processor=tokenizer)
 
-    hf_inputs = tokenizer.apply_chat_template(HF_MESSAGES[:-1], add_generation_prompt=True)
+    hf_inputs = _get_input_ids(tokenizer.apply_chat_template(HF_MESSAGES[:-1], add_generation_prompt=True))
     v1_inputs = renderer.render_messages(V1_MESSAGES[:-1], is_generate=True)
     assert v1_inputs["input_ids"] == hf_inputs
     assert v1_inputs["attention_mask"] == [1] * len(hf_inputs)
     assert v1_inputs["labels"] == [-100] * len(hf_inputs)
     assert v1_inputs["loss_weights"] == [0.0] * len(hf_inputs)
 
-    hf_inputs_part = tokenizer.apply_chat_template(HF_MESSAGES[:-1], add_generation_prompt=False)
-    hf_inputs_full = tokenizer.apply_chat_template(HF_MESSAGES, add_generation_prompt=False)
+    hf_inputs_part = _get_input_ids(tokenizer.apply_chat_template(HF_MESSAGES[:-1], add_generation_prompt=False))
+    hf_inputs_full = _get_input_ids(tokenizer.apply_chat_template(HF_MESSAGES, add_generation_prompt=False))
     v1_inputs_full = renderer.render_messages(V1_MESSAGES, is_generate=False)
     assert v1_inputs_full["input_ids"] == hf_inputs_full
     assert v1_inputs_full["attention_mask"] == [1] * len(hf_inputs_full)
@@ -111,8 +118,8 @@ def test_chatml_parse():
 def test_chatml_rendering_remote(num_samples: int):
     tokenizer: Processor = AutoTokenizer.from_pretrained("llamafactory/tiny-random-qwen3")
     renderer = Renderer(template="chatml", processor=tokenizer)
-    data_args = DataArguments(dataset="llamafactory/v1-sft-demo")
-    data_engine = DataEngine(data_args)
+    data_args = DataArguments(train_dataset="llamafactory/v1-sft-demo")
+    data_engine = DataEngine(data_args.train_dataset)
     for index in range(num_samples):
         v1_inputs = renderer.render_messages(data_engine[index]["messages"], is_generate=True)
         prefix = tokenizer.encode("<|im_start|>user\n", add_special_tokens=False)
@@ -124,17 +131,21 @@ def test_qwen3_nothink_rendering():
     tokenizer: Processor = AutoTokenizer.from_pretrained("Qwen/Qwen3-4B-Instruct-2507")
     renderer = Renderer(template="qwen3_nothink", processor=tokenizer)
 
-    hf_inputs = tokenizer.apply_chat_template(HF_MESSAGES_WITH_TOOLS[:-1], tools=V1_TOOLS, add_generation_prompt=True)
+    hf_inputs = _get_input_ids(
+        tokenizer.apply_chat_template(HF_MESSAGES_WITH_TOOLS[:-1], tools=V1_TOOLS, add_generation_prompt=True)
+    )
     v1_inputs = renderer.render_messages(V1_MESSAGES_WITH_TOOLS[:-1], tools=json.dumps(V1_TOOLS), is_generate=True)
     assert v1_inputs["input_ids"] == hf_inputs
     assert v1_inputs["attention_mask"] == [1] * len(hf_inputs)
     assert v1_inputs["labels"] == [-100] * len(hf_inputs)
     assert v1_inputs["loss_weights"] == [0.0] * len(hf_inputs)
 
-    hf_inputs_part = tokenizer.apply_chat_template(
-        HF_MESSAGES_WITH_TOOLS[:-1], tools=V1_TOOLS, add_generation_prompt=False
+    hf_inputs_part = _get_input_ids(
+        tokenizer.apply_chat_template(HF_MESSAGES_WITH_TOOLS[:-1], tools=V1_TOOLS, add_generation_prompt=False)
     )
-    hf_inputs_full = tokenizer.apply_chat_template(HF_MESSAGES_WITH_TOOLS, tools=V1_TOOLS, add_generation_prompt=False)
+    hf_inputs_full = _get_input_ids(
+        tokenizer.apply_chat_template(HF_MESSAGES_WITH_TOOLS, tools=V1_TOOLS, add_generation_prompt=False)
+    )
     v1_inputs_full = renderer.render_messages(V1_MESSAGES_WITH_TOOLS, tools=json.dumps(V1_TOOLS), is_generate=False)
     assert v1_inputs_full["input_ids"] == hf_inputs_full
     assert v1_inputs_full["attention_mask"] == [1] * len(hf_inputs_full)
@@ -167,8 +178,8 @@ def test_qwen3_nothink_parse():
 def test_qwen3_nothink_rendering_remote(num_samples: int):
     tokenizer: Processor = AutoTokenizer.from_pretrained("Qwen/Qwen3-4B-Instruct-2507")
     renderer = Renderer(template="qwen3_nothink", processor=tokenizer)
-    data_args = DataArguments(dataset="llamafactory/reason-tool-use-demo-1500")
-    data_engine = DataEngine(data_args)
+    data_args = DataArguments(train_dataset="llamafactory/reason-tool-use-demo-1500")
+    data_engine = DataEngine(data_args.train_dataset)
     for index in range(num_samples):
         v1_inputs = renderer.render_messages(data_engine[index]["messages"], tools=data_engine[index]["tools"])
         prefix_text = (
@@ -184,10 +195,49 @@ def test_qwen3_nothink_rendering_remote(num_samples: int):
         assert v1_inputs["input_ids"][: len(prefix)] == prefix
 
 
+def test_process_sft_samples():
+    tokenizer: Processor = AutoTokenizer.from_pretrained("llamafactory/tiny-random-qwen3")
+    renderer = Renderer(template="chatml", processor=tokenizer)
+    hf_inputs = _get_input_ids(tokenizer.apply_chat_template(HF_MESSAGES))
+
+    samples = [{"messages": V1_MESSAGES, "extra_info": "test", "_dataset_name": "default"}]
+    model_inputs = renderer.process_samples(samples)
+    assert len(model_inputs) == 1
+    assert model_inputs[0]["input_ids"] == hf_inputs
+    assert model_inputs[0]["extra_info"] == "test"
+    assert model_inputs[0]["_dataset_name"] == "default"
+
+
+def test_process_dpo_samples():
+    tokenizer: Processor = AutoTokenizer.from_pretrained("llamafactory/tiny-random-qwen3")
+    renderer = Renderer(template="chatml", processor=tokenizer)
+    hf_inputs = _get_input_ids(tokenizer.apply_chat_template(HF_MESSAGES))
+
+    samples = [
+        {
+            "chosen_messages": V1_MESSAGES,
+            "rejected_messages": V1_MESSAGES,
+            "extra_info": "test",
+            "_dataset_name": "default",
+        }
+    ]
+    model_inputs = renderer.process_samples(samples)
+    assert len(model_inputs) == 1
+    assert model_inputs[0]["input_ids"] == hf_inputs * 2
+    assert model_inputs[0]["token_type_ids"] == [1] * len(hf_inputs) + [2] * len(hf_inputs)
+    assert model_inputs[0]["extra_info"] == "test"
+    assert model_inputs[0]["_dataset_name"] == "default"
+
+
 if __name__ == "__main__":
+    """
+    python -m tests_v1.core.utils.test_rendering
+    """
     test_chatml_rendering()
     test_chatml_parse()
     test_chatml_rendering_remote(16)
     test_qwen3_nothink_rendering()
     test_qwen3_nothink_parse()
     test_qwen3_nothink_rendering_remote(16)
+    test_process_sft_samples()
+    test_process_dpo_samples()

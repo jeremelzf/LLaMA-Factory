@@ -30,7 +30,6 @@ from .model_utils.embedding import resize_embedding_layer
 from .model_utils.kv_cache import configure_kv_cache
 from .model_utils.longlora import configure_longlora
 from .model_utils.moe import add_z3_leaf_module, configure_moe
-from .model_utils.packing import configure_packing
 from .model_utils.quantization import configure_quantization
 from .model_utils.rope import configure_rope
 from .model_utils.valuehead import prepare_valuehead_model
@@ -59,6 +58,26 @@ def patch_qwen3_omni_moe_thinker_text_sparse_moe_block():
         )
 
         modeling_qwen3_omni_moe.Qwen3OmniMoeThinkerTextSparseMoeBlock = Qwen3OmniMoeThinkerTextSparseMoeBlock
+
+
+def patch_youtu_vl_model(model: "PreTrainedModel") -> None:
+    original_forward = model.forward
+
+    def forward(self, *args, **kwargs):
+        outputs = original_forward(*args, **kwargs)
+        if "loss" not in outputs and "labels" in kwargs:
+            logits = outputs.get("logits")
+            labels = kwargs.get("labels")
+            if logits is not None and labels is not None:
+                shift_logits = logits[..., :-1, :].contiguous()
+                shift_labels = labels[..., 1:].contiguous()
+                loss_fct = torch.nn.CrossEntropyLoss()
+                loss = loss_fct(shift_logits.view(-1, self.config.vocab_size), shift_labels.view(-1))
+                outputs["loss"] = loss
+
+        return outputs
+
+    model.forward = MethodType(forward, model)
 
 
 def patch_tokenizer(tokenizer: "PreTrainedTokenizer", model_args: "ModelArguments") -> None:
@@ -122,7 +141,6 @@ def patch_config(
     configure_quantization(config, tokenizer, model_args, is_trainable, init_kwargs)
     configure_moe(config, model_args, is_trainable)
     configure_visual_model(config)
-    configure_packing(model_args, is_trainable)
     configure_kv_cache(config, model_args, is_trainable)
 
     if getattr(config, "model_type", None) == "qwen":
@@ -206,6 +224,9 @@ def patch_model(
     if is_trainable:
         if getattr(model.config, "model_type", None) == "gemma3n":
             setattr(model_args, "disable_gradient_checkpointing", True)
+
+        if getattr(model.config, "model_type", None) == "youtu_vl":
+            patch_youtu_vl_model(model)
 
         prepare_model_for_training(model, model_args)
         autocast_projector_dtype(model, model_args)

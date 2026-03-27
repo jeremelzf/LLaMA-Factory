@@ -120,6 +120,17 @@ def pytest_collection_modifyitems(config: Config, items: list[Item]):
     _handle_device_visibility(items)
 
 
+@pytest.fixture(scope="session", autouse=True)
+def _set_env():
+    # add project root dir to path for mp run
+    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    if project_root not in sys.path:
+        sys.path.insert(0, project_root)
+
+    os.environ["PYTHONPATH"] = project_root + os.pathsep + os.getenv("PYTHONPATH", "")
+    os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
+
 @pytest.fixture(autouse=True)
 def _cleanup_distributed_state():
     """Cleanup distributed state after each test."""
@@ -150,13 +161,6 @@ def _manage_distributed_env(request: FixtureRequest, monkeypatch: MonkeyPatch) -
 
         monkeypatch.setenv(env_key, devices_str)
 
-        # add project root dir to path for mp run
-        project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-        if project_root not in sys.path:
-            sys.path.insert(0, project_root)
-
-        os.environ["PYTHONPATH"] = project_root + os.pathsep + os.environ.get("PYTHONPATH", "")
-
     else:  # non-distributed test
         if old_value:
             visible_devices = [v for v in old_value.split(",") if v != ""]
@@ -168,3 +172,33 @@ def _manage_distributed_env(request: FixtureRequest, monkeypatch: MonkeyPatch) -
             monkeypatch.setattr(torch.cuda, "device_count", lambda: 1)
         elif CURRENT_DEVICE == "npu":
             monkeypatch.setattr(torch.npu, "device_count", lambda: 1)
+
+
+@pytest.fixture(scope="session", autouse=True)
+def bypass_mistral_regex_check():
+    """Disable Mistral regex network check.
+
+    Monkey-patch TokenizersBackend._patch_mistral_regex into a no-op.
+    """
+    try:
+        from transformers.tokenization_utils_fast import TokenizersBackend
+    except ImportError:
+        # Very old transformers, nothing to patch
+        yield
+        return
+
+    if not hasattr(TokenizersBackend, "_patch_mistral_regex"):
+        # Method does not exist in this version
+        yield
+        return
+
+    # Backup original method
+    original = TokenizersBackend._patch_mistral_regex
+
+    # Replace with no-op
+    TokenizersBackend._patch_mistral_regex = lambda cls, tokenizer, *args, **kwargs: tokenizer
+
+    yield
+
+    # Restore original method
+    TokenizersBackend._patch_mistral_regex = original
