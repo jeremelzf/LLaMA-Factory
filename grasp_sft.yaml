@@ -1,0 +1,57 @@
+### Model
+model_name_or_path: Qwen/Qwen3-VL-8B-Instruct
+trust_remote_code: true
+
+### Training Method
+stage: sft
+do_train: true
+finetuning_type: lora
+
+### Template
+template: qwen3_vl
+flash_attn: auto
+
+### Dataset
+dataset_dir: data
+dataset: grasp_phase_step
+cutoff_len: 4096
+max_samples: 72846
+preprocessing_num_workers: 16
+
+### LoRA Configuration
+lora_rank: 8
+lora_alpha: 16
+lora_dropout: 0.05
+lora_target: all
+freeze_vision_tower: true
+freeze_multi_modal_projector: true
+
+### Image Settings
+image_max_pixels: 589824
+image_min_pixels: 1024
+
+### Training Hyperparameters
+per_device_train_batch_size: 1
+gradient_accumulation_steps: 16
+num_train_epochs: 3.0
+learning_rate: 2.0e-4
+lr_scheduler_type: cosine
+warmup_steps: 100
+max_grad_norm: 1.0
+optim: adamw_torch
+bf16: true
+
+### Logging & Saving
+logging_steps: 10
+save_steps: 500
+output_dir: /nfs/home/svu/e0957602/LLaMA-Factory/saves/grasp_phase_step
+report_to: none
+plot_loss: true
+
+### Thinking Mode
+enable_thinking: true
+
+### Misc
+packing: false
+ddp_timeout: 180000000
+include_num_input_tokens_seen: true
