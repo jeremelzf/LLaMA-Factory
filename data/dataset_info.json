@@ -775,7 +775,7 @@
     }
   },
   "grasp_phase_step": {
-  "file_name": "GraSP/train/V2/GraSP_PhaseStep_Recognition_updated.jsonl",
+  "file_name": "GraSP/train/V2/GraSP_PhaseStep_Recognition_final.jsonl",
   "formatting": "sharegpt",
   "columns": {
     "messages": "conversations",
