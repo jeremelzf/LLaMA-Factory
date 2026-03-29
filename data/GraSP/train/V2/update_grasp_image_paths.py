@@ -2,8 +2,9 @@
 """
 Update GraSP JSONL entries:
 1) replace old "image" paths with new base paths,
-2) normalize "image" as a one-item list: ["..."],
-3) prepend "<image>\\n" to the human turn when missing.
+2) zero-pad 30fps frame filenames to 9 digits under BASE_30FPS,
+3) normalize "image" as a one-item list: ["..."],
+4) prepend "<image>\\n" to the human turn when missing.
 
 Reads and writes UTF-8 JSONL line-by-line with progress and summary stats.
 """
@@ -22,6 +23,30 @@ BASE_1FPS = "/scratch/e0957602/BN4101/frames/1fps_frames"
 # Old path markers to detect
 MARKER_30FPS = "/GraSP/train/frames/"
 MARKER_1FPS = "/GraSP/GraSP_1fps/frames/"
+
+FRAME_PAD_WIDTH = 9
+
+
+def _pad_30fps_frame_filename(path: str) -> str:
+    """
+    For paths under BASE_30FPS, rewrite the last path segment (e.g. 04762.jpg) so the
+    numeric frame stem is zero-padded to FRAME_PAD_WIDTH digits.
+    """
+    prefix = BASE_30FPS + "/"
+    if not path.startswith(prefix):
+        return path
+    rel = path[len(prefix) :].lstrip("/")
+    parts = rel.split("/")
+    if len(parts) < 2:
+        return path
+    fname = parts[-1]
+    stem = Path(fname).stem
+    suffix = Path(fname).suffix
+    if not stem.isdigit():
+        return path
+    padded_name = f"{int(stem):0{FRAME_PAD_WIDTH}d}{suffix}"
+    case_parts = parts[:-1]
+    return f"{BASE_30FPS}/{'/'.join(case_parts)}/{padded_name}"
 
 
 def _map_image_path(old_path: str) -> tuple[str | None, str]:
@@ -77,6 +102,8 @@ def update_jsonl_image_paths(input_path: Path, output_path: Path) -> None:
                 elif kind == "1fps":
                     count_1fps += 1
                 final_image = new_image
+
+            final_image = _pad_30fps_frame_filename(final_image)
 
             # Normalize image to list form.
             obj["image"] = [final_image]
