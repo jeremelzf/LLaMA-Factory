@@ -55,3 +55,6 @@ enable_thinking: true
 packing: false
 ddp_timeout: 180000000
 include_num_input_tokens_seen: true
+
+### Resume Training
+resume_from_checkpoint: /scratch/e0957602/BN4101/saves/grasp_phase_step/checkpoint-9500
