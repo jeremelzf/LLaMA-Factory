@@ -1,0 +1,14 @@
+### Model
+model_name_or_path: Qwen/Qwen3-VL-8B-Instruct
+template: qwen3_vl
+
+### LoRA adapter path (your trained adapter)
+adapter_name_or_path: /scratch/e0957602/BN4101/saves/grasp_phase_step/
+
+### Finetuning type
+finetuning_type: lora
+
+### Export settings
+export_dir: /scratch/e0957602/BN4101/exported_model/
+export_size: 5        # splits output into shards of max 5GB each
+export_legacy_format: false
