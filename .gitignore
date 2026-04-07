@@ -186,3 +186,5 @@ predictions_score.json
 data/GraSP/train/V2/GraSP_PhaseStep_Recognition.jsonl
 data/GraSP/train/V2/GraSP_PhaseStep_Recognition_updated.jsonl
 data/GraSP/train/V2/GraSP_PhaseStep_Recognition_final.jsonl
+data/GraSP/train/V2/GraSP_PhaseStep_Recognition_updated_wrong.jsonl
+data/GraSP/train/V2/GraSP_PhaseStep_Recognition_final_wrong.jsonl
