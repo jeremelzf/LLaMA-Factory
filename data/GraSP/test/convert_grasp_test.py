@@ -121,8 +121,12 @@ def main():
                 "instruments": set(),
                 "actions":     set(),
             }
-        st_by_image[iid]["instruments"].add(ann["category_id"])
-        for action_id in ann["actions"]:
+        # Handle both "category_id" and "instruments" field names
+        instrument_id = ann.get("category_id") or ann.get("instruments")
+        if instrument_id:
+            st_by_image[iid]["instruments"].add(instrument_id)
+
+        for action_id in ann.get("actions", []):
             st_by_image[iid]["actions"].add(action_id)
 
     # Build set of short-term filenames for quick lookup
