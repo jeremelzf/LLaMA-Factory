@@ -781,5 +781,13 @@
     "messages": "conversations",
     "images": "image"
     }
+  },
+  "GraSP_test": {
+  "file_name": "GraSP/test/GraSP_test.jsonl",
+  "formatting": "sharegpt",
+  "columns": {
+    "messages": "conversations",
+    "images": "image"
+    } 
   }
 }
