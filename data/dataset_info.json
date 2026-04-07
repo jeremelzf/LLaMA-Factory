@@ -782,7 +782,7 @@
     "images": "image"
     }
   },
-  "GraSP_test": {
+  "grasp_test": {
   "file_name": "GraSP/test/GraSP_test.jsonl",
   "formatting": "sharegpt",
   "columns": {
