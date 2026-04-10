@@ -1,0 +1,32 @@
+#!/bin/bash
+#PBS -N grasp_eval
+#PBS -l select=1:ncpus=8:ngpus=2:mem=64gb
+#PBS -l walltime=12:00:00
+#PBS -o /scratch/e0957602/BN4101/logs/grasp_eval.out
+#PBS -e /scratch/e0957602/BN4101/logs/grasp_eval.err
+#PBS -M e0957602@u.nus.edu
+#PBS -m abe
+
+cd $PBS_O_WORKDIR
+cd ~/LLaMA-Factory
+
+# Load modules
+module load Python/3.12.3-GCCcore-13.3.0
+
+# Activate environment
+source ~/venvs/llmf/bin/activate
+
+echo "=== Inference Started ==="
+echo "Job ID: $PBS_JOBID"
+echo "Started on: $(date)"
+echo "Running on node: $(hostname)"
+echo "GPUs available: $(nvidia-smi --query-gpu=name --format=csv,noheader)"
+echo "========================"
+
+# Launch training on 2 GPUs
+torchrun --nproc_per_node=2 \
+    $(which llamafactory-cli) predict \
+    ~/LLaMA-Factory/grasp_eval.yaml
+
+echo "=== Inference Complete ==="
+echo "Finished on: $(date)"
