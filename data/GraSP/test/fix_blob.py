@@ -61,6 +61,22 @@ def _skip_separators(s: str, pos: int) -> int:
     return pos
 
 
+def _normalize_human_value(obj: dict) -> None:
+    conversations = obj.get("conversations")
+    if not isinstance(conversations, list):
+        return
+
+    for turn in conversations:
+        if not isinstance(turn, dict):
+            continue
+        if turn.get("from") != "human":
+            continue
+
+        value = turn.get("value")
+        if isinstance(value, str) and "<image>\\n" in value:
+            turn["value"] = value.replace("<image>\\n", "<image>\n")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(
         description=(
@@ -103,6 +119,7 @@ def main() -> None:
                 )
 
             obj, new_pos = dec.raw_decode(text, pos)
+            _normalize_human_value(obj)
             out.write(json.dumps(obj, ensure_ascii=False) + "\n")
             count += 1
             pos = new_pos
