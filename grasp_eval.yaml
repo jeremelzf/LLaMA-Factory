@@ -8,7 +8,7 @@ dataset_dir: /home/e0957602/LLaMA-Factory/data/
 
 ### Inference settings
 do_predict: true
-per_device_eval_batch_size: 1   # 1 as think mode generates long outputs
+per_device_eval_batch_size: 2
 predict_with_generate: true
 max_new_tokens: 1024            # increase from 128 — think blocks can be very long
 
