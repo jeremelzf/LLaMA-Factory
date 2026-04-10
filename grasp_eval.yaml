@@ -16,4 +16,4 @@ do_predict: true
 ### Generation settings
 max_new_tokens: 1024
 do_sample: false
-per_device_eval_batch_size: 4
+per_device_eval_batch_size: 8
