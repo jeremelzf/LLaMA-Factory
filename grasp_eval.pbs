@@ -1,6 +1,6 @@
 #!/bin/bash
 #PBS -N grasp_eval
-#PBS -l select=1:ncpus=8:ngpus=2:mem=64gb
+#PBS -l select=1:ncpus=8:ngpus=1:mem=64gb
 #PBS -l walltime=48:00:00
 #PBS -o /scratch/e0957602/BN4101/logs/grasp_eval.out
 #PBS -e /scratch/e0957602/BN4101/logs/grasp_eval.err
@@ -24,7 +24,7 @@ echo "GPUs available: $(nvidia-smi --query-gpu=name --format=csv,noheader)"
 echo "========================"
 
 # Launch training on 2 GPUs
-FORCE_TORCHRUN=1 CUDA_VISIBLE_DEVICES=0,1 llamafactory-cli train \
+CUDA_VISIBLE_DEVICES=0 llamafactory-cli train \
     ~/LLaMA-Factory/grasp_eval.yaml
 
 echo "=== Inference Complete ==="

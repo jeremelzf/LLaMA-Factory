@@ -17,4 +17,4 @@ do_predict: true
 max_new_tokens: 1024
 temperature: 0.0
 top_p: 1.0
-per_device_eval_batch_size: 2
+per_device_eval_batch_size: 1
