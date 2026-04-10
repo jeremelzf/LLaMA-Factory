@@ -24,8 +24,7 @@ echo "GPUs available: $(nvidia-smi --query-gpu=name --format=csv,noheader)"
 echo "========================"
 
 # Launch training on 2 GPUs
-torchrun --nproc_per_node=2 \
-    $(which llamafactory-cli) predict \
+FORCE_TORCHRUN=1 CUDA_VISIBLE_DEVICES=0,1 llamafactory-cli train \
     ~/LLaMA-Factory/grasp_eval.yaml
 
 echo "=== Inference Complete ==="
