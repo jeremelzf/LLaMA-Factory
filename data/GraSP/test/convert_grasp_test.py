@@ -1,5 +1,7 @@
 import json
 import os
+import random
+from collections import defaultdict
 
 # ── CONFIG ───────────────────────────────────────────────────────────────────
 LONG_TERM_JSON  = "data/GraSP/test/grasp_long-term_test.json"
@@ -79,11 +81,17 @@ def make_entry(entry_id, image_path, question, answer):
         "image": [image_path],
         "keywords": ["Phase&Step Recognition"],
         "conversations": [
-            {"from": "human",  "value": f"<image>\\n{question}"},
+            {"from": "human",  "value": f"<image>\n{question}"},
             {"from": "gpt",    "value": answer, "original_value": answer},
         ],
         "level": 3,
     }
+
+def _format_seconds(seconds: float) -> str:
+    seconds = int(round(seconds))
+    h, rem = divmod(seconds, 3600)
+    m, s = divmod(rem, 60)
+    return f"{h}h {m}m {s}s"
 
 # ── MAIN ─────────────────────────────────────────────────────────────────────
 def main():
@@ -137,20 +145,53 @@ def main():
     entries = []
     skipped = 0
 
-    # --- Long-term: phase + step entries for ALL 1fps frames ---
-    print("Generating long-term (phase + step) entries...")
+    # --- Long-term: phase-stratified 20% random sample (phase + step) ---
+    print("Bucketing long-term frames by phase (existence-checked)...")
+    lt_phase_buckets = defaultdict(list)  # phase_id -> [image_id, ...] (only existing on disk)
+    lt_existing_total_by_phase = defaultdict(int)
     for image_id, labels in lt_labels.items():
-        file_name  = lt_id_to_filename[image_id]            # e.g. CASE041/00000.jpg
+        file_name = lt_id_to_filename[image_id]  # e.g. CASE041/00000.jpg
         image_path = os.path.join(FRAMES_DIR, file_name)
-
         if not os.path.exists(image_path):
             skipped += 1
             continue
+        phase_id = labels["phase"]
+        lt_phase_buckets[phase_id].append(image_id)
+        lt_existing_total_by_phase[phase_id] += 1
+
+    rng = random.Random(42)
+    sampled_lt_image_ids = set()
+    lt_sampled_by_phase = {}
+
+    print("Sampling 20% per phase (min 1 if phase has any frames)...")
+    for phase_id in range(0, 11):
+        bucket = lt_phase_buckets.get(phase_id, [])
+        n = len(bucket)
+        if n == 0:
+            k = 0
+            sampled = []
+        else:
+            k = max(1, int(round(n * 0.20)))
+            k = min(k, n)
+            sampled = rng.sample(bucket, k)
+        sampled_lt_image_ids.update(sampled)
+        lt_sampled_by_phase[phase_id] = (n, len(sampled))
+
+    print("\n=== Long-term stratified sampling breakdown (existing-on-disk only) ===")
+    for phase_id in range(0, 11):
+        total_n, sampled_k = lt_sampled_by_phase.get(phase_id, (0, 0))
+        phase_name = PHASE_NAMES.get(phase_id, f"Phase_{phase_id}")
+        print(f"Phase {phase_id:>2} ({phase_name}): {total_n} -> {sampled_k}")
+
+    print("\nGenerating long-term (phase + step) entries from sampled frames...")
+    for image_id in sorted(sampled_lt_image_ids):
+        labels = lt_labels[image_id]
+        file_name = lt_id_to_filename[image_id]
+        image_path = os.path.join(FRAMES_DIR, file_name)
 
         phase_name = PHASE_NAMES.get(labels["phase"], f"Phase_{labels['phase']}")
         step_name  = STEP_NAMES.get(labels["step"],   f"Step_{labels['step']}")
 
-        # Phase question entry
         entries.append(make_entry(
             entry_id   = f"lt_{image_id}_phase",
             image_path = image_path,
@@ -158,7 +199,6 @@ def main():
             answer     = phase_name,
         ))
 
-        # Step question entry
         entries.append(make_entry(
             entry_id   = f"lt_{image_id}_step",
             image_path = image_path,
@@ -209,9 +249,9 @@ def main():
     # ---------- Write output --------------------------------------------------
     with open(OUTPUT_JSONL, "w", encoding="utf-8") as f:
         for entry in entries:
-            f.write(json.dumps(entry, ensure_ascii=False) + "\\n")
+            f.write(json.dumps(entry, ensure_ascii=False) + "\n")
 
-    print("\\n=== Summary ===")
+    print("\n=== Summary ===")
     print(f"Total entries written : {len(entries)}")
     print(f"  Phase entries       : {sum(1 for e in entries if 'phase' in e['id'])}")
     print(f"  Step entries        : {sum(1 for e in entries if 'step' in e['id'])}")
@@ -219,6 +259,12 @@ def main():
     print(f"  Action entries      : {sum(1 for e in entries if 'action' in e['id'])}")
     print(f"Frames skipped        : {skipped}")
     print(f"Output written to     : {OUTPUT_JSONL}")
+
+    est_batch1 = len(entries) * 20
+    est_batch4 = len(entries) * 5
+    print("Estimated eval time   :")
+    print(f"  batch=1 (~20s/entry): {_format_seconds(est_batch1)}")
+    print(f"  batch=4 (~5s/entry) : {_format_seconds(est_batch4)}")
 
 
 if __name__ == "__main__":
