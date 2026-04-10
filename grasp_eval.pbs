@@ -1,7 +1,7 @@
 #!/bin/bash
 #PBS -N grasp_eval
 #PBS -l select=1:ncpus=8:ngpus=2:mem=64gb
-#PBS -l walltime=12:00:00
+#PBS -l walltime=48:00:00
 #PBS -o /scratch/e0957602/BN4101/logs/grasp_eval.out
 #PBS -e /scratch/e0957602/BN4101/logs/grasp_eval.err
 #PBS -M e0957602@u.nus.edu
