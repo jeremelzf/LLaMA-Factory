@@ -3,7 +3,7 @@ model_name_or_path: /scratch/e0957602/BN4101/exported_model_run2/
 template: qwen3_vl
 
 ### Dataset
-dataset: grasp_test
+eval_dataset: grasp_test
 dataset_dir: /home/e0957602/LLaMA-Factory/data/
 cutoff_len: 4096
 
