@@ -74,12 +74,12 @@ Q_INSTRUMENT = "What surgical instruments are visible in this prostatectomy imag
 Q_ACTION     = "What atomic actions are being performed by the surgical instruments in this image?"
 
 # ── HELPERS ──────────────────────────────────────────────────────────────────
-def make_entry(entry_id, image_path, question, answer):
+def make_entry(entry_id, image_path, question, answer, keywords):
     """Create one ShareGPT-format JSONL entry."""
     return {
         "id": entry_id,
         "image": [image_path],
-        "keywords": ["Phase&Step Recognition"],
+        "keywords": keywords,
         "conversations": [
             {"from": "human",  "value": f"<image>\n{question}"},
             {"from": "gpt",    "value": answer, "original_value": answer},
@@ -197,6 +197,7 @@ def main():
             image_path = image_path,
             question   = Q_PHASE,
             answer     = phase_name,
+            keywords   = ["Phase&Step Recognition"],
         ))
 
         entries.append(make_entry(
@@ -204,6 +205,7 @@ def main():
             image_path = image_path,
             question   = Q_STEP,
             answer     = step_name,
+            keywords   = ["Phase&Step Recognition"],
         ))
 
     # --- Short-term: instrument + action entries for 35s keyframes only ---
@@ -236,6 +238,7 @@ def main():
             image_path = image_path,
             question   = Q_INSTRUMENT,
             answer     = instrument_answer,
+            keywords   = ["Instrument&Action Recognition"],
         ))
 
         # Action question entry
@@ -244,6 +247,7 @@ def main():
             image_path = image_path,
             question   = Q_ACTION,
             answer     = action_answer,
+            keywords   = ["Instrument&Action Recognition"],
         ))
 
     # ---------- Write output --------------------------------------------------
