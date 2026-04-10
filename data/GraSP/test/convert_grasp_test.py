@@ -145,7 +145,7 @@ def main():
     entries = []
     skipped = 0
 
-    # --- Long-term: phase-stratified 20% random sample (phase + step) ---
+    # --- Long-term: phase-stratified 23% random sample (phase + step) ---
     print("Bucketing long-term frames by phase (existence-checked)...")
     lt_phase_buckets = defaultdict(list)  # phase_id -> [image_id, ...] (only existing on disk)
     lt_existing_total_by_phase = defaultdict(int)
@@ -163,7 +163,7 @@ def main():
     sampled_lt_image_ids = set()
     lt_sampled_by_phase = {}
 
-    print("Sampling 20% per phase (min 1 if phase has any frames)...")
+    print("Sampling 23% per phase (min 1 if phase has any frames)...")
     for phase_id in range(0, 11):
         bucket = lt_phase_buckets.get(phase_id, [])
         n = len(bucket)
@@ -171,7 +171,7 @@ def main():
             k = 0
             sampled = []
         else:
-            k = max(1, int(round(n * 0.20)))
+            k = max(1, int(round(n * 0.23)))
             k = min(k, n)
             sampled = rng.sample(bucket, k)
         sampled_lt_image_ids.update(sampled)
