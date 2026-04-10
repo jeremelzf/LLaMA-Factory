@@ -15,6 +15,5 @@ do_predict: true
 
 ### Generation settings
 max_new_tokens: 1024
-temperature: 0.0
-top_p: 1.0
+do_sample: false
 per_device_eval_batch_size: 1
