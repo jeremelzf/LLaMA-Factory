@@ -5,12 +5,15 @@ template: qwen3_vl
 ### Dataset
 dataset: grasp_test
 dataset_dir: /home/e0957602/LLaMA-Factory/data/
-
-### Inference settings
-do_predict: true
-per_device_eval_batch_size: 2
-predict_with_generate: true
-max_new_tokens: 1024            # increase from 128 — think blocks can be very long
+cutoff_len: 4096
 
 ### Output
 output_dir: /scratch/e0957602/BN4101/eval_output/
+predict_with_generate: true
+do_predict: true
+
+### Generation settings
+max_new_tokens: 1024
+temperature: 0.0
+top_p: 1.0
+per_device_eval_batch_size: 2
