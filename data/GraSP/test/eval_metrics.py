@@ -456,6 +456,7 @@ def main():
     parser.add_argument(
         "predictions_file",
         type=str,
+        nargs="?",
         help="Path to generated_predictions.jsonl or .txt (LLaMA-Factory do_predict).",
     )
     parser.add_argument(
