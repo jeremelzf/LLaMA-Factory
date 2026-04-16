@@ -1,0 +1,38 @@
+[
+  {
+    "task": "phase",
+    "n_samples": 9867,
+    "accuracy": 0.6185264011350968,
+    "macro_f1": 0.5745134125615912,
+    "mAP": 0.4041664748738747,
+    "micro_f1": null,
+    "exact_match": null
+  },
+  {
+    "task": "step",
+    "n_samples": 9867,
+    "accuracy": 0.45261984392419174,
+    "macro_f1": 0.3306967562961174,
+    "mAP": 0.18614501940323422,
+    "micro_f1": null,
+    "exact_match": null
+  },
+  {
+    "task": "instrument",
+    "n_samples": 1125,
+    "accuracy": null,
+    "macro_f1": 0.2284405553841206,
+    "micro_f1": 0.34249263984298334,
+    "exact_match": 0.027555555555555555,
+    "mAP": 0.3657965133982671
+  },
+  {
+    "task": "action",
+    "n_samples": 1125,
+    "accuracy": null,
+    "macro_f1": 0.06657339841541056,
+    "micro_f1": 0.12708333333333333,
+    "exact_match": 0.021333333333333333,
+    "mAP": 0.2007086381561766
+  }
+]

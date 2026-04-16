@@ -1,0 +1,159 @@
+======================================================================
+PREDICTION ANALYSIS REPORT
+======================================================================
+
+------------------------------------------------------------
+TASK: PHASE (9867 samples)
+  GT fully in answer (substring / all parts): 5959/9867 = 60.4%
+
+  Top 10 GROUND TRUTH labels (or label sets):
+     3244x  idle
+     1141x  developing the space of retzius
+     1041x  left pelvic isolated lymphadenectomy
+      871x  seminal vesicle dissection
+      807x  right pelvic isolated lymphadenectomy
+      738x  prostatic pedicle control
+      678x  bladder neck reconstruction
+      447x  bladder neck identification and transection
+      350x  ligation of the deep dorsal venous complex
+      309x  development of the plane between the prostate and rectum
+
+  Top 20 LAST LINE of model answer:
+      515x  the surgical phase is left pelvic isolated lymphadenectomy, currently performing
+      514x  the surgical phase is left pelvic isolated lymphadenectomy, currently focused on
+      446x  the surgical phase is bladder neck identification and transection, with the key 
+      384x  the surgical phase is bladder neck reconstruction, currently performing the step
+      348x  the surgical phase is right pelvic isolated lymphadenectomy, currently focused o
+      270x  the surgical phase is idle, with no active instrument-tissue interaction occurri
+      261x  the surgical phase is idle, with no active instrumentation or tissue manipulatio
+      215x  the surgical phase is prostatic pedicle control, with the key action being the c
+      186x  the surgical phase is right pelvic isolated lymphadenectomy, currently performin
+      151x  the surgical phase is developing the space of retzius, with the key action being
+      148x  the surgical phase currently being performed is seminal vesicle dissection.
+      128x  the surgical phase is bladder neck identification and transection, currently per
+      119x  the surgical phase is idle, with instruments positioned but not actively manipul
+      118x  the surgical phase is prostatic pedicle control, currently performing the step o
+      115x  the surgical phase is developing the space of retzius, driven by the action of c
+      115x  the surgical phase is bladder neck reconstruction, currently involving the preci
+      110x  the surgical phase is developing the space of retzius, driven by prevesical diss
+      107x  the surgical phase is ligation of the deep dorsal venous complex, with the key a
+      103x  the surgical phase is bladder neck reconstruction, currently involving the place
+       97x  the surgical phase is idle, with instruments positioned but not actively perform
+
+------------------------------------------------------------
+TASK: STEP (9867 samples)
+  GT fully in answer (substring / all parts): 2304/9867 = 23.4%
+
+  Top 10 GROUND TRUTH labels (or label sets):
+     3244x  idle
+     1127x  cut suture or tissue
+      799x  seminal vesicle dissection
+      748x  cutting and dissection of the external iliac veins lymph node
+      631x  identification and dissection of the iliac vein and artery
+      426x  cut between the prostate and bladder neck
+      331x  obturator nerve and vessel path identification, dissection and cutting of the obturator lymph nodes
+      319x  prevessical dissection
+      305x  dissection of denonviliers fascia
+      299x  vascular pedicle control
+
+  Top 20 LAST LINE of model answer:
+      825x  the surgical step currently being performed is seminal vesicle dissection.
+      277x  the surgical step is left pelvic isolated lymphadenectomy, currently focused on 
+      234x  the surgical step is dissection and cutting of the external iliac vein's lymph n
+      231x  the surgical step currently being performed is prevesical dissection to develop 
+      225x  the surgical step is idle, with no active instrumentation or tissue manipulation
+      220x  the surgical step is currently idle, with instruments positioned but not activel
+      161x  the surgical step currently being performed is prostatic pedicle control, involv
+      155x  the surgical step is left pelvic isolated lymphadenectomy, involving identificat
+      155x  the surgical step currently being performed is passing a suture through the blad
+      141x  the surgical step is idle, with no active instrument-tissue interaction occurrin
+      119x  the surgical step currently being performed is pulling the suture to reconstruct
+      108x  the surgical step currently being performed is developing the space of retzius t
+      102x  the surgical step is identification and dissection of the iliac vein and artery 
+       92x  the surgical step is left pelvic isolated lymphadenectomy, involving dissection 
+       91x  the surgical step currently being performed is developing the space of retzius b
+       88x  the surgical step is right pelvic isolated lymphadenectomy, currently focused on
+       87x  the surgical step is passing a suture through the bladder neck to initiate recon
+       84x  the surgical step is developing the space of retzius through prevesical dissecti
+       82x  the surgical step is pulling the suture to reconstruct the bladder neck.
+       81x  the surgical step is dissecting and cutting the lymph node adjacent to the exter
+
+------------------------------------------------------------
+TASK: INSTRUMENT (1125 samples)
+  GT fully in answer (substring / all parts): 0/1125 = 0.0%
+
+  Top 10 GROUND TRUTH labels (or label sets):
+      289x  ('bipolar forceps', 'monopolar curved scissors')
+      191x  ('bipolar forceps', 'monopolar curved scissors', 'suction instrument')
+      159x  ('large needle driver',)
+      139x  ('bipolar forceps', 'monopolar curved scissors', 'prograsp forceps')
+       59x  ('bipolar forceps', 'monopolar curved scissors', 'prograsp forceps', 'suction instrument')
+       43x  ('large needle driver', 'prograsp forceps')
+       33x  ('monopolar curved scissors',)
+       30x  ('bipolar forceps', 'laparoscopic grasper', 'monopolar curved scissors')
+       23x  ('bipolar forceps', 'laparoscopic grasper', 'monopolar curved scissors', 'prograsp forceps')
+       23x  ('monopolar curved scissors', 'prograsp forceps')
+
+  Top 20 LAST LINE of model answer:
+       25x  the surgical instruments are idle, with no active manipulation occurring in the 
+       15x  the surgical instruments visible are a grasper retracting prostatic tissue and a
+       13x  the surgical instruments are idle and not actively manipulating tissue, indicati
+        9x  the surgical instruments visible are a needle driver passing a suture through th
+        8x  the surgical instruments visible are a grasper retracting the seminal vesicle an
+        7x  the surgical instruments are idle, with no active manipulation or tissue interac
+        7x  the surgical instruments visible are a grasper retracting tissue and an energy d
+        6x  the surgical instruments are idle, with no active tissue manipulation occurring.
+        6x  the surgical instruments visible are a grasper retracting fascia and an energy d
+        5x  the surgical instruments are idle, positioned but not actively manipulating tiss
+        5x  the surgical instruments visible are a needle holder passing a suture through th
+        4x  the surgical instruments visible are robotic graspers and dissectors performing 
+        4x  the surgical phase is idle, with instruments positioned but not actively manipul
+        4x  the surgical instruments are positioned but not actively engaged, indicating a p
+        4x  the surgical instruments visible are a grasper applying traction to the seminal 
+        4x  the surgical instruments visible are a grasper retracting seminal vesicle tissue
+        4x  the surgical instruments visible are a laparoscopic grasper retracting perivascu
+        4x  the surgical instruments visible are a laparoscopic grasper retracting tissue an
+        4x  the surgical instruments visible are a grasper retracting perivascular tissue an
+        3x  the surgical instruments visible are a laparoscopic grasper and an energy device
+
+------------------------------------------------------------
+TASK: ACTION (1125 samples)
+  GT fully in answer (substring / all parts): 0/1125 = 0.0%
+
+  Top 10 GROUND TRUTH labels (or label sets):
+      247x  ('hold', 'still', 'travel')
+      127x  ('hold', 'still')
+      104x  ('still',)
+       64x  ('still', 'travel')
+       54x  ('hold', 'still', 'suction', 'travel')
+       38x  ('hold', 'push', 'still')
+       34x  ('travel',)
+       23x  ('hold', 'still', 'suction')
+       19x  ('hold', 'pull', 'travel')
+       18x  ('hold', 'open', 'still', 'travel')
+
+  Top 20 LAST LINE of model answer:
+       24x  the surgical action is the identification and dissection of the iliac vein and a
+       14x  the surgical action is the identification and dissection of the obturator nerve 
+        7x  the surgical action is dissecting and cutting a lymph node adjacent to the exter
+        7x  the surgical action is the dissection and mobilization of the seminal vesicle us
+        7x  the surgical instruments are idle, with no active manipulation or tissue interac
+        7x  the atomic action is passing a suture through the bladder neck tissue to initiat
+        7x  the surgical action is the dissection and cutting of a lymph node adjacent to th
+        5x  the surgical instruments are idle, with no active tissue manipulation occurring.
+        5x  the surgical action is dissecting the prevesical fascia to develop the space of 
+        5x  the surgical action is prevesical dissection to develop the space of retzius, in
+        5x  the atomic action is pulling a suture to reconstruct the bladder neck.
+        5x  the atomic action is passing a suture through the bladder neck to initiate recon
+        5x  the atomic actions are passing a suture through the bladder neck and stabilizing
+        5x  the surgical action is passing a suture through the bladder neck tissue to initi
+        5x  the surgical action is the dissection and isolation of a lymph node adjacent to 
+        4x  the surgical action is cutting a fibrous tissue band to develop the space of ret
+        4x  the surgical action is dissecting the prevesical tissue plane to develop the spa
+        4x  the surgical action is developing the space of retzius through prevesical dissec
+        4x  the surgical action is pulling a suture to approximate tissue during bladder nec
+        4x  the atomic action is pulling a suture to approximate tissue during bladder neck 
+
+======================================================================
+Use this output to tune normalize_single_label / normalize_multilabel.
+======================================================================
